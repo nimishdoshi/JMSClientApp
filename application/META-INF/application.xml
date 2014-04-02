@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE application PUBLIC
+ '-//Sun Microsystems, Inc.//DTD J2EE Application 1.3//EN'
+ 'http://java.sun.com/dtd/application_1_3.dtd'>
+
+<application>
+  <display-name>WorkerApp</display-name>
+  <description>JMS Worker Application</description>
+  <module>
+    <web>
+      <web-uri>WorkServlet.war</web-uri>
+      <context-root>work</context-root>
+    </web>
+  </module>
+  <module>
+    <ejb>ejb_worker.jar</ejb>
+  </module>
+</application>
+

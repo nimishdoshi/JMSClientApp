@@ -1,0 +1,95 @@
+                           JMS Client Application
+                           --- ------ -----------
+##############################################################################
+Author 
+Nimish Doshi
+##############################################################################
+
+############################## DISCLAIMER ##############################
+This code and application is provided as is with no warranty and
+the author is responsible for its use or misuse.
+########################################################################
+
+The purpose of this project is to demostrate how to use interface inheritance
+as the basis for sending out generic Unit of Work objects over a JMS Queue to
+allow underutilized computers to execute the code in the Unit of Work Objects
+on remote computers and send results back to the JMS server.
+
+After unzipping the distribution, make sure you have WebLogic Server 10.3 installed.
+If you use a later version WebLogic, you may have to port the install.bat and setup.bat files.
+
+What follows below are instructions on running the sample code using pure J2EE
+constructs in the shipped examples WLS 10.3 server.
+
+
+This install.bat script makes use of the examples server shipped with WLS 10.3.
+
+The code is divided into these individual parts:
+UnitOfWork.java - interface containing doWork(), print(), store() and store(filename) methods
+SimpleMatrix.java - 3 x 3 matrix of large random integers implementing UnitOfWork
+		You can change the rows and columns member variables to change the size.
+WorkServlet.java - used as an artificial way to create SimpleMatrix Object messages
+	on a Worker.Request queue. Each SEND request generates 5 messages on the queue.
+	You can change the numMessages member variable to control the number of
+	messages placed on the queue per SEND request or startup.
+ejb\MessageWorkerBean.java - this is a MDB listening for completed UnitOfWork messages on the
+	the Worker.Response queue. It will call the print() and store(filename) methods of the object.
+JMSClient\QueueReceive.java - This main program will listen on the Worker.Requst queue
+	for UnitOfWork (SimpleMatrix) messags and call doWork() on each object and then
+	place a response on the WOrker.Response queue
+JMSClient\QueueSend.java - this main program supplied by BEA's examples\src\jms\queue directory
+	has been modified to send a text message to the Worker.Request queue. The QueueReceive
+	program will exit if the message received is equal to "quit".
+
+To install and execute the supplied code:
+
+1) First start the BEA WebLogic 10.3 supplied examples server and log into the admin console
+   for the server using weblogic and weblogic as the user and password at http://localhost:7001/console.
+   Expand Services->Messages->JMS Modules->examples-JMS and configure 2 new JMS Queues.
+   Queue Name : worker.request	JNDI name: Worker.Request
+   Queue Name : worker.response	JNDI name: Worker.Response
+
+Be sure to use a Subdeploment of: examplesJMSServer   for both queues
+	Use Default values for everything else.
+
+Even though it tells you not to, restart the WebLogic server as my distribution could not find the
+new queues without a restart.
+
+2) Edit the supplied setup.bat file and set the following Environment variables to reflect your installation:
+	WEBLOGICHOME=d:\bea\wlserver_10.3  (Where you've installed WebLogic Server)
+	PROJECTSHOME=d:\mydocs\Projects\JMSClientApp (where you've unzipped the distribution)
+	set PROJECTNAME=JMSClientApp (Name of directory of the project)
+2A) Edit JMSClientApp\ejb\META-INF\ejb-jar.xml and set the filename value where results with be
+    stored next to the <env-entry-value> entry. Make sure you have permission
+    to write this file that will be created.
+3) Run setup.bat from the commmand line. This sets the environment variables and the CLASSPATH
+4) Run install.bat from the same command line. If there is an error, examine step 2.
+5) Look in the WebLogic console to see if JMSWorke.ear is Deployed.
+
+To execute the supplied code:
+1) The WorkServet will place 5 messages on Worker.Request on startup. You can send more
+   messages 5 at a time by using: http://localhost:7001/work/WorkServlet?Action=SEND.
+   Action=DISCONNECT will disconnect the servlet from the JMS queue and ACTION=CONNECT will
+   connect the servlet to the JMS Queue. By default, the servlet is connected on startup.
+2) Open up a new command prompt and run the setup.bat from the distribution.
+   Go to the JMSClient directory and run Receive.bat. You should see a print statement for
+   every SimpleMatrix that was received and processed.
+NOte: if you wish to run install.bat again, please shutdown this JMS client as Windows holds
+a lock to Workingclass.jar while the JMS clients are running preventing it from being updated.
+
+3) Open up a new command prompt and run the setup.bat from the distribution.
+   Go to the JMSClient directory and run Send.bat. Type quit at the command line to
+   send a message to Worker.Request for the QueueReceive program to quit processing.
+
+Note: If you want to run the JMS Clients on remote computers, in this setup, you will
+need to have weblogic.jar in your classpath. You can also use Weblogic's thin client and
+thin JMS client libraries in your classpath in which case you will be using iiop as
+the protocol to connect to WebLogic, which would require you to change the Receive.bat
+and Send.bat file contents appropriately.
+
+
+
+
+
+
+   

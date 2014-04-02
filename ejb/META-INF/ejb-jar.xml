@@ -1,0 +1,33 @@
+<!DOCTYPE ejb-jar PUBLIC '-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN' 'http://java.sun.com/dtd/ejb-jar_2_0.dtd'>
+
+
+<!-- Generated XML! -->
+
+<ejb-jar>
+  <enterprise-beans>
+    <message-driven>
+      <ejb-name>WorkerMessageDriven</ejb-name>
+	<env-entry>
+        <env-entry-name>filename</env-entry-name>
+        <env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>C:\bea\wlserver_10.3\JMSClientApp\results.log</env-entry-value>
+      </env-entry>
+      <ejb-class>examples.work.MessageWorkerBean</ejb-class>
+      <transaction-type>Container</transaction-type>
+      <message-driven-destination>
+        <destination-type>javax.jms.Queue</destination-type>
+      </message-driven-destination>
+    </message-driven>
+  </enterprise-beans>
+
+  <assembly-descriptor>
+    <container-transaction>
+    	<method>
+        <ejb-name>WorkerMessageDriven</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+     </container-transaction>
+  </assembly-descriptor> 
+
+</ejb-jar>
